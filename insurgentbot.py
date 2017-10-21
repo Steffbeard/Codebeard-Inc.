@@ -3,7 +3,6 @@ from discord.ext import commands
 import random
 
 description = '''InsurgentBot coded by Steffbeard. For use in the Insurgency Gym.
-
 There are a number of utility commands being showcased here.'''
 bot = commands.Bot(command_prefix='.', description=description)
 
@@ -13,6 +12,8 @@ async def on_ready():
     guilds = len(bot.guilds)
     game = discord.Game(name=".help | Coded by Steffbeard and FreeDoum.")
     await bot.change_presence(status=discord.Status.online, game=game)
+    global mapPool
+    mapPool = ["District", "Embassy", "Market", "Uprising", "Station", "Verticality", "Heights", "Siege", "Ministry"]
     print("-----------------------------")
     print("Martydom is overrated")
     print("-----------------------------")
@@ -37,6 +38,31 @@ async def roll(ctx, dice: str):
 
     result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
     await ctx.send(result)
+
+@bot.command()
+async def startvote(ctx):
+    """Starts a vote for the map"""
+    global mapProb
+    mapProb = []
+    await ctx.send('Please vote using .vote followed by the number associated with the map you desire the most\n\n1: District\n2: Embassy\n3: Market\n4: Uprising\n5: Station\n6: Verticality\n7: Heights\n8: Siege\n9: Ministry')
+
+@bot.command()
+async def vote(ctx, mapNum: int):
+    """Registers vote"""
+    global mapProb
+    global mapPool
+    mapProb.append(mapNum)
+    mapName = mapPool[mapNum - 1]
+    await ctx.send('Vote for {} registered'.format(mapName))
+
+@bot.command()
+async def endvote(ctx):
+    """Terminates the vote for the map"""
+    global mapProb
+    global mapPool
+    mapName = mapPool[random.choice(mapProb) - 1]
+    await ctx.send('Vote ended, the resulting map is {}'.format(mapName))
+    mapProb = 0
 
 @bot.command(description='For when you wanna settle the score some other way')
 async def choose(ctx, *choices: str):
@@ -64,7 +90,7 @@ async def _bot(ctx):
 @bot.command()
 async def pickmap(ctx):
     """Picks a random map from the map pool"""
-    await ctx.send(random.choice(["District", "Heights", "Market", "Ministry", "Station", "Siege", "Uprising", "Embassy", "Verticality"]))
+    await ctx.send(random.choice(mapPool))
 
 @bot.command()
 async def callout(ctx, map):
@@ -91,4 +117,3 @@ async def callout(ctx, map):
 
 
 bot.run('MzcwMDEyNjU1MjAyNTk4OTEy.DMg5fQ.3Jzs2volpAGyNEwI8TQS-raiKpA')
-
