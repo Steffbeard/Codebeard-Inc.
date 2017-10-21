@@ -198,4 +198,47 @@ async def stats(ctx):
     await message.delete()
     await ctx.send(embed=embed)
 
+@bot.command()
+@commands.cooldown(1, 5, commands.BucketType.user)
+async def serverinfo(ctx):
+    """Gives info about the server."""
+    user = ctx.message.author
+    guild = ctx.message.guild
+    online = len([m.status for m in guild.members
+			      if m.status == discord.Status.online or
+				  m.status == discord.Status.idle])
+    total_users = len(guild.members)
+    passed = (ctx.message.created_at - guild.created_at).days
+    created_at = ("Created {}. That's {} days ago!"
+			      "".format(guild.created_at.strftime("%d %b %Y %H:%M"),
+						   passed))
+    categories = len(guild.categories)
+    text = len(guild.text_channels)
+    voice = len(guild.voice_channels)
+    features = guild.features
+    if features == []:
+	    features = "No VIP Features"
+    else:
+	    features = guild.features
+
+    data = discord.Embed(description=created_at, color=0x41454E)
+    data.add_field(name="Region", value=str(guild.region))
+    data.add_field(name="Features", value=features)
+    data.add_field(name="Users", value="{}/{}".format(online, total_users))
+    data.add_field(name="Roles", value=len(guild.roles))
+    data.add_field(name="Channels", value="{} Categories | {} Text | {} Voice".format(categories, text, voice))
+    data.add_field(name="Owner", value=str(guild.owner.mention))
+    data.set_footer(text="Guild ID: {}".format(guild.id))
+
+    if guild.icon_url:
+	    data.set_author(name=guild.name, url=guild.icon_url)
+	    data.set_thumbnail(url=guild.icon_url)
+    else:
+	    data.set_author(name=guild.name)
+
+    try:
+	    await ctx.send(embed=data)
+    except discord.HTTPException:
+	    await ctx.send("{}, I need the `Embed Links` permission to send this command's output. :no_entry:".format(user.mention))
+
 bot.run('MzcwMDEyNjU1MjAyNTk4OTEy.DMg5fQ.3Jzs2volpAGyNEwI8TQS-raiKpA')
