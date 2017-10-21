@@ -44,6 +44,8 @@ async def roll(ctx, dice: str):
 @bot.command()
 async def startvote(ctx):
     """Starts a vote for the map"""
+    user = ctx.message.author
+    channel = user.voice
     global mapVotes
     global voteID
     global mapPool
@@ -51,11 +53,17 @@ async def startvote(ctx):
     mapVotes = []
     voteID = []
     vote = True
-    await ctx.send('Please vote using .vote followed by the number associated with the map you desire the most\n\n1: District\n2: Embassy\n3: Market\n4: Uprising\n5: Station\n6: Verticality\n7: Heights\n8: Siege\n9: Ministry')
+    if channel is None:
+        await ctx.send("You must be in a voice channel to do this command.")
+    else:
+        await ctx.send('```Please vote using .vote followed by the number associated with the map you desire the most\n\n1: District\n2: Embassy\n3: Market\n4: Uprising\n5: Station\n6: Verticality\n7: Heights\n8: Siege\n9: Ministry```')
 
 @bot.command()
 async def vote(ctx, mapNum: int):
     """Registers vote"""
+    user = ctx.message.author
+    channel = user.voice
+    global vote
     global vote
     if vote == False:
         await ctx.send('There is no ongoing vote')
@@ -69,14 +77,22 @@ async def vote(ctx, mapNum: int):
     mapVotes.append(mapNum)
     voteID.append(ctx.message.author)
     mapName = mapPool[mapNum - 1]
-    await ctx.send('Vote for {} registered'.format(mapName))
+    if channel is None:
+        await ctx.send("You must be in a voice channel to do this command.")
+    else:
+        await ctx.send('Vote for {} registered'.format(mapName))
 
 @bot.command()
 async def endvote(ctx):
     """Terminates the vote for the map"""
+    user = ctx.message.author
+    channel = user.voice
     global vote
     if vote == False:
         await ctx.send('There is no ongoing vote')
+        return
+    if channel is None:
+        await ctx.send("You must be in a voice channel to do this command.")
         return
     global mapVotes
     global voteID
@@ -94,11 +110,6 @@ async def endvote(ctx):
 async def choose(ctx, *choices: str):
     """Chooses between multiple choices."""
     await ctx.send(random.choice(choices))
-
-@bot.command()
-async def joined(ctx, member: discord.Member):
-    """Says when a member joined."""
-    await ctx.send('{0.name} joined in {0.joined_at}'.format(member))
 
 @bot.group()
 async def cool(ctx):
