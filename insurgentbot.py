@@ -13,7 +13,9 @@ async def on_ready():
     game = discord.Game(name=".help | Coded by Steffbeard and FreeDoum.")
     await bot.change_presence(status=discord.Status.online, game=game)
     global mapPool
+    global vote
     mapPool = ["District", "Embassy", "Market", "Uprising", "Station", "Verticality", "Heights", "Siege", "Ministry"]
+    vote = False
     print("-----------------------------")
     print("Martydom is overrated")
     print("-----------------------------")
@@ -42,27 +44,51 @@ async def roll(ctx, dice: str):
 @bot.command()
 async def startvote(ctx):
     """Starts a vote for the map"""
-    global mapProb
-    mapProb = []
+    global mapVotes
+    global voteID
+    global mapPool
+    global vote
+    mapVotes = []
+    voteID = []
+    vote = True
     await ctx.send('Please vote using .vote followed by the number associated with the map you desire the most\n\n1: District\n2: Embassy\n3: Market\n4: Uprising\n5: Station\n6: Verticality\n7: Heights\n8: Siege\n9: Ministry')
 
 @bot.command()
 async def vote(ctx, mapNum: int):
     """Registers vote"""
-    global mapProb
+    global vote
+    if vote == False:
+        await ctx.send('There is no ongoing vote')
+        return
+    global voteID
+    if ctx.message.author in voteID:
+        await ctx.send('You already voted smh')
+        return
+    global mapVotes
     global mapPool
-    mapProb.append(mapNum)
+    mapVotes.append(mapNum)
+    voteID.append(ctx.message.author)
     mapName = mapPool[mapNum - 1]
     await ctx.send('Vote for {} registered'.format(mapName))
 
 @bot.command()
 async def endvote(ctx):
     """Terminates the vote for the map"""
-    global mapProb
+    global vote
+    if vote == False:
+        await ctx.send('There is no ongoing vote')
+        return
+    global mapVotes
+    global voteID
     global mapPool
-    mapName = mapPool[random.choice(mapProb) - 1]
-    await ctx.send('Vote ended, the resulting map is {}'.format(mapName))
-    mapProb = 0
+    if mapVotes == []:
+        await ctx.send('Vote ended, no vote registered')
+    else:
+        mapName = mapPool[random.choice(mapVotes) - 1]
+        await ctx.send('Vote ended, the resulting map is {}'.format(mapName))
+    mapVotes = 0
+    voteID = 0
+    vote = False
 
 @bot.command(description='For when you wanna settle the score some other way')
 async def choose(ctx, *choices: str):
