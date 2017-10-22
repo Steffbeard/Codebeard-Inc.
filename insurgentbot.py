@@ -1,7 +1,7 @@
 import random
 import time
-
 import discord
+import csv
 from discord.ext import commands
 
 description = '''InsurgentBot coded by Steffbeard and FreeDoum. For use in the Insurgency Gym.
@@ -13,12 +13,16 @@ bot = commands.Bot(command_prefix='.', description=description)
 async def on_ready():
     users = len(set(bot.get_all_members()))
     guilds = len(bot.guilds)
-    game = discord.Game(name=".help | Coded by Steffbeard and FreeDoum.")
+    game = discord.Game(name=".help | homecoded by insurgents")
     await bot.change_presence(status=discord.Status.online, game=game)
-    global mapPool
-    global vote
+    global mapPool #List of possible comp maps
+    global vote #Indicates if a vote a vote is ongoing
+    global coolPeople #List of people of cool people
+    global mikeeQuotes #List of brilliant Mikee quotes
+    mikeeQuotes = open('mikee.txt', 'r').readlines()
     mapPool = ["District", "Embassy", "Market", "Uprising", "Station", "Verticality", "Heights", "Siege", "Ministry"]
     vote = False
+    coolPeople = ['<@178653059096772611>','<@267088096770785291>']
     print("-----------------------------")
     print("Martydom is overrated")
     print("-----------------------------")
@@ -46,6 +50,14 @@ async def roll(ctx, dice: str):
 
     result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
     await ctx.send(result)
+    
+@bot.command()
+@commands.cooldown(1, 3, commands.BucketType.user)
+async def mikee(ctx):
+    """Enlightens you with some of Mikee's wisdom"""
+    global mikeeQuotes
+    random.seed()
+    await ctx.send('***{}***'.format(random.choice(mikeeQuotes).rstrip('\n')))
 
 
 @bot.command()
@@ -55,7 +67,7 @@ async def startvote(ctx):
     user = ctx.message.author
     channel = user.voice
     global mapVotes
-    global voteID
+    global voteID #User ID of the voter
     global mapPool
     global vote
     mapVotes = []
@@ -132,14 +144,11 @@ async def choose(ctx, *choices: str):
 @commands.cooldown(1, .5, commands.BucketType.user)
 async def cool(ctx, member):
     """Says if a user is cool"""
-    member=member.id
-    await ctx.send('No, {} is not cool.'.format(member))
-
-@cool.command(name='bot')
-@commands.cooldown(1, .5, commands.BucketType.user)
-async def _bot(ctx):
-    """Is the bot cool?"""
-    await ctx.send('Yes, the bot is cool.')
+    global coolPeople
+    if str(member) in coolPeople:
+        await ctx.send('{} is cool af bro'.format(member))
+    else:
+        await ctx.send('No, {} is not cool'.format(member))
 
 
 @bot.command()
@@ -151,12 +160,11 @@ async def pickmap(ctx):
 
 @bot.command()
 @commands.cooldown(1, .5, commands.BucketType.user)
-async def callout(ctx, map):
+async def callouts(ctx, map):
     """Gives you a video to the callouts for the specific map."""
     map = map.lower()
     if map == "district":
-        await ctx.send(
-            "Here you go: https://www.youtube.com/watch?v=LIUJM8guWrE&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8&index=4")
+        await ctx.send("Here you go: https://www.youtube.com/watch?v=LIUJM8guWrE&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8&index=4")
     elif map == "heights":
         await ctx.send("Here you are: https://www.youtube.com/watch?v=rH0pOM2w_xo")
     elif map == "market":
@@ -166,22 +174,13 @@ async def callout(ctx, map):
     elif map == "station":
         await ctx.send("Here you are: https://www.youtube.com/watch?v=JEF2sG-KRIU")
     elif map == "siege":
-        await ctx.send(
-            "Here: https://www.youtube.com/watch?v=JxmcAIU_lnY&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8&index=7")
+        await ctx.send("Here: https://www.youtube.com/watch?v=JxmcAIU_lnY&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8&index=7")
     elif map == "uprising":
         await ctx.send("Here you go: https://www.youtube.com/watch?v=MUyQIhYA7-I")
     elif map == "embassy":
-        await ctx.send(
-            "Here you are: https://www.youtube.com/watch?v=fmT18WHiPYM&index=5&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8")
+        await ctx.send("Here you are: https://www.youtube.com/watch?v=fmT18WHiPYM&index=5&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8")
     elif map == "verticality":
-        await ctx.send(
-            "Here: https://www.youtube.com/watch?v=ITIfjU55SkI&index=10&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8")
-
-
-@bot.command()
-async def invite(ctx):
-    """Gives an invite link for the bot."""
-    await ctx.send("")
+        await ctx.send("Here: https://www.youtube.com/watch?v=ITIfjU55SkI&index=10&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8")
 
 
 @bot.command()
@@ -213,8 +212,7 @@ async def serverinfo(ctx):
     total_users = len(guild.members)
     passed = (ctx.message.created_at - guild.created_at).days
     created_at = ("Created {}. That's {} days ago!"
-                  "".format(guild.created_at.strftime("%d %b %Y %H:%M"),
-                            passed))
+                  "".format(guild.created_at.strftime("%d %b %Y %H:%M"),passed))
     categories = len(guild.categories)
     text = len(guild.text_channels)
     voice = len(guild.voice_channels)
@@ -223,7 +221,6 @@ async def serverinfo(ctx):
         features = "No VIP Features"
     else:
         features = guild.features
-
     data = discord.Embed(description=created_at, color=0x41454E)
     data.add_field(name="Region", value=str(guild.region))
     data.add_field(name="Features", value=features)
@@ -238,7 +235,6 @@ async def serverinfo(ctx):
         data.set_thumbnail(url=guild.icon_url)
     else:
         data.set_author(name=guild.name)
-
     try:
         await ctx.send(embed=data)
     except discord.HTTPException:
