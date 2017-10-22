@@ -76,8 +76,7 @@ async def startvote(ctx):
     if channel is None:
         await ctx.send("You must be in a voice channel to do this command.")
     else:
-        await ctx.send(
-            '```Please vote using .vote followed by the number associated with the map you desire the most\n\n1: District\n2: Embassy\n3: Market\n4: Uprising\n5: Station\n6: Verticality\n7: Heights\n8: Siege\n9: Ministry```')
+        await ctx.send('```Please vote using .vote followed by the number associated with the map you desire the most\n\n1: District\n2: Embassy\n3: Market\n4: Uprising\n5: Station\n6: Verticality\n7: Heights\n8: Siege\n9: Ministry```')
 
 
 @bot.command()
@@ -189,14 +188,9 @@ async def info(ctx):
     """Provides info about the bot."""
     embed = discord.Embed(color=0x41454E, description="InsurgentBot by Steff and FreeDoum.")
     embed.title = "Info about InsurgentBot:"
-    embed.add_field(name="What is InsurgentBot?",
-                    value="InsurgentBot is a Discord bot written in the discord.py library. It has many fun commands for users.",
-                    inline=False)
-    embed.add_field(name="Who made this bot?", value="Coded by Steffbeard and FreeDoum, additional refrence by Mippy.",
-                    inline=False)
-    embed.add_field(name="Credits to:",
-                    value="[Rapptz/discord.py](https://github.com/Rapptz/discord.py), [The users in the Discord API server](https://discord.gg/discord-api), [The Insurgency Gym](https://discord.gg/658eVDM), [Mippy](https://williamlomas.me)",
-                    inline=False)
+    embed.add_field(name="What is InsurgentBot?",value="InsurgentBot is a Discord bot written in the discord.py library. It has many fun commands for users.",inline=False)
+    embed.add_field(name="Who made this bot?", value="Coded by Steffbeard and FreeDoum, additional refrence by Mippy.",inline=False)
+    embed.add_field(name="Credits to:",value="[Rapptz/discord.py](https://github.com/Rapptz/discord.py), [The users in the Discord API server](https://discord.gg/discord-api), [The Insurgency Gym](https://discord.gg/658eVDM), [Mippy](https://williamlomas.me)",inline=False)
     await ctx.send(embed=embed)
 
 
@@ -206,13 +200,10 @@ async def serverinfo(ctx):
     """Gives info about the server."""
     user = ctx.message.author
     guild = ctx.message.guild
-    online = len([m.status for m in guild.members
-                  if m.status == discord.Status.online or
-                  m.status == discord.Status.idle])
+    online = len([m.status for m in guild.members if m.status == discord.Status.online or m.status == discord.Status.idle])
     total_users = len(guild.members)
     passed = (ctx.message.created_at - guild.created_at).days
-    created_at = ("Created {}. That's {} days ago!"
-                  "".format(guild.created_at.strftime("%d %b %Y %H:%M"),passed))
+    created_at = ("Created {}. That's {} days ago!" "".format(guild.created_at.strftime("%d %b %Y %H:%M"),passed))
     categories = len(guild.categories)
     text = len(guild.text_channels)
     voice = len(guild.voice_channels)
@@ -238,8 +229,7 @@ async def serverinfo(ctx):
     try:
         await ctx.send(embed=data)
     except discord.HTTPException:
-        await ctx.send(
-            "{}, I need the `Embed Links` permission to send this command's output. :no_entry:".format(user.mention))
+        await ctx.send("{}, I need the `Embed Links` permission to send this command's output. :no_entry:".format(user.mention))
 
 
 @bot.command()
