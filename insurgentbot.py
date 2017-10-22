@@ -130,25 +130,16 @@ async def choose(ctx, *choices: str):
 
 @bot.group()
 @commands.cooldown(1, .5, commands.BucketType.user)
-async def cool(ctx):
-    """Says if a user is cool.
-    In reality this just checks if a subcommand is being invoked.
-    """
-    if ctx.invoked_subcommand is None:
-        await ctx.send('No, {} is not cool.'.format(ctx))
-
+async def cool(ctx, member):
+    """Says if a user is cool"""
+    member=member.id
+    await ctx.send('No, {} is not cool.'.format(member))
 
 @cool.command(name='bot')
 @commands.cooldown(1, .5, commands.BucketType.user)
 async def _bot(ctx):
     """Is the bot cool?"""
     await ctx.send('Yes, the bot is cool.')
-
-@cool.command(name='FreeDoum')
-@commands.cooldown(1, .5, commands.BucketType.user)
-async def _bot(ctx):
-    """Is the bot cool?"""
-    await ctx.send('Yes, FreeDoum is hella cool.')
 
 
 @bot.command()
@@ -211,27 +202,6 @@ async def info(ctx):
 
 
 @bot.command()
-@commands.cooldown(1, 3, commands.BucketType.user)
-async def stats(ctx):
-    """Shows InsurgentBot's stats."""
-    servercount = len(bot.guilds)
-    usercount = len(set(bot.get_all_members()))
-    channelcount = len(set(bot.get_all_channels()))
-    t1 = time.perf_counter()
-    message = await ctx.send("Checking stats... :cd:")
-    t2 = time.perf_counter()
-    ping = round((t2 - t1) * 1000)
-    embed = discord.Embed(color=0x41454E, description="Current Bot Stats")
-    embed.title = "InsurgentBot Stats:"
-    embed.add_field(name="Ping", value="{}ms".format(ping))
-    embed.add_field(name="Servers", value=servercount)
-    embed.add_field(name="Users", value=usercount)
-    embed.add_field(name="Channels", value=channelcount)
-    await message.delete()
-    await ctx.send(embed=embed)
-
-
-@bot.command()
 @commands.cooldown(1, 5, commands.BucketType.user)
 async def serverinfo(ctx):
     """Gives info about the server."""
@@ -275,11 +245,13 @@ async def serverinfo(ctx):
         await ctx.send(
             "{}, I need the `Embed Links` permission to send this command's output. :no_entry:".format(user.mention))
 
+
 @bot.command()
 @commands.cooldown(1, 1800)
-async def here(ctx, message):
+async def here(ctx, int):
     """Asks @here to join PUG."""
-    await ctx.send("@here Need {} more members for a PUG!".format(message))
+    await ctx.send("@here Need {} more members for a :fire: PUG!".format(int))
+
 
 @bot.command()
 @commands.cooldown(1, 3, commands.BucketType.user)
@@ -301,6 +273,7 @@ async def stats(ctx):
     embed.add_field(name="Channels", value=channelcount)
     await ctx.send(embed=embed)  
 
+
 @bot.command()
 @commands.cooldown(1, 3, commands.BucketType.user)
 async def ping(ctx):
@@ -316,12 +289,14 @@ async def info_error_handler(ctx, error):
         await ctx.send("{}, you are being ratelimited. :no_entry:\nThis request has been logged, check `{}ratelimits` for more info.".format(user.mention, ctx.prefix))
         print("User {}({}) ratelimited at command 'info'".format(user, user.id))
 
+
 @stats.error
 async def stats_error_handler(ctx, error):
     user = ctx.message.author
     if isinstance(error, commands.CommandOnCooldown):
         await ctx.send("{}, you are being ratelimited. :no_entry:\nThis request has been logged, check `{}ratelimits` for more info.".format(user.mention, ctx.prefix))
         print("User {}({}) ratelimited at command 'stats'".format(user, user.id))
+
 
 @here.error
 async def say_error_handler(ctx, error):
@@ -336,6 +311,7 @@ async def say_error_handler(ctx, error):
         embed.title = "{}here Help".format(ctx.prefix)
         embed.add_field(name="{}here <message>".format(ctx.prefix), value="Put a number of people needed to join the PUG!", inline=False)
         await ctx.send(embed=embed)
+
 
 @add.error
 async def say_error_handler(ctx, error):
