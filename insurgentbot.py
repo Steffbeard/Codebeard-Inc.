@@ -1,9 +1,8 @@
-import discord
-from discord.ext import commands
 import random
 import time
-import datetime
-import logging
+
+import discord
+from discord.ext import commands
 
 description = '''InsurgentBot coded by Steffbeard and FreeDoum. For use in the Insurgency Gym.
 There are a number of utility commands being showcased here.'''
