@@ -2,10 +2,13 @@ import discord
 from discord.ext import commands
 import random
 import time
+import datetime
+import logging
 
 description = '''InsurgentBot coded by Steffbeard and FreeDoum. For use in the Insurgency Gym.
 There are a number of utility commands being showcased here.'''
 bot = commands.Bot(command_prefix='.', description=description)
+
 
 @bot.event
 async def on_ready():
@@ -25,11 +28,13 @@ async def on_ready():
     print("Currently serving {} users".format(users))
     print("-----------------------------")
 
+
 @bot.command()
 @commands.cooldown(1, .5, commands.BucketType.user)
 async def add(ctx, left: int, right: int):
     """Adds two numbers together."""
     await ctx.send(left + right)
+
 
 @bot.command()
 async def roll(ctx, dice: str):
@@ -42,6 +47,7 @@ async def roll(ctx, dice: str):
 
     result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
     await ctx.send(result)
+
 
 @bot.command()
 @commands.cooldown(1, .5, commands.BucketType.user)
@@ -59,7 +65,9 @@ async def startvote(ctx):
     if channel is None:
         await ctx.send("You must be in a voice channel to do this command.")
     else:
-        await ctx.send('```Please vote using .vote followed by the number associated with the map you desire the most\n\n1: District\n2: Embassy\n3: Market\n4: Uprising\n5: Station\n6: Verticality\n7: Heights\n8: Siege\n9: Ministry```')
+        await ctx.send(
+            '```Please vote using .vote followed by the number associated with the map you desire the most\n\n1: District\n2: Embassy\n3: Market\n4: Uprising\n5: Station\n6: Verticality\n7: Heights\n8: Siege\n9: Ministry```')
+
 
 @bot.command()
 @commands.cooldown(1, .5, commands.BucketType.user)
@@ -86,6 +94,7 @@ async def vote(ctx, mapNum: int):
     else:
         await ctx.send('Vote for {} registered'.format(mapName))
 
+
 @bot.command()
 @commands.cooldown(1, .5, commands.BucketType.user)
 async def endvote(ctx):
@@ -111,11 +120,13 @@ async def endvote(ctx):
     voteID = 0
     vote = False
 
+
 @bot.command(description='For when you wanna settle the score some other way')
 @commands.cooldown(1, .5, commands.BucketType.user)
 async def choose(ctx, *choices: str):
     """Chooses between multiple choices."""
     await ctx.send(random.choice(choices))
+
 
 @bot.group()
 @commands.cooldown(1, .5, commands.BucketType.user)
@@ -124,7 +135,8 @@ async def cool(ctx):
     In reality this just checks if a subcommand is being invoked.
     """
     if ctx.invoked_subcommand is None:
-        await ctx.send('No, {0.subcommand_passed} is not cool, only FreeDoum is.'.format(ctx))
+        await ctx.send('No, {} is not cool.'.format(ctx))
+
 
 @cool.command(name='bot')
 @commands.cooldown(1, .5, commands.BucketType.user)
@@ -132,11 +144,19 @@ async def _bot(ctx):
     """Is the bot cool?"""
     await ctx.send('Yes, the bot is cool.')
 
+@cool.command(name='FreeDoum')
+@commands.cooldown(1, .5, commands.BucketType.user)
+async def _bot(ctx):
+    """Is the bot cool?"""
+    await ctx.send('Yes, FreeDoum is hella cool.')
+
+
 @bot.command()
 @commands.cooldown(1, .5, commands.BucketType.user)
 async def pickmap(ctx):
     """Picks a random map from the map pool"""
     await ctx.send(random.choice(mapPool))
+
 
 @bot.command()
 @commands.cooldown(1, .5, commands.BucketType.user)
@@ -144,7 +164,8 @@ async def callout(ctx, map):
     """Gives you a video to the callouts for the specific map."""
     map = map.lower()
     if map == "district":
-        await ctx.send("Here you go: https://www.youtube.com/watch?v=LIUJM8guWrE&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8&index=4")
+        await ctx.send(
+            "Here you go: https://www.youtube.com/watch?v=LIUJM8guWrE&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8&index=4")
     elif map == "heights":
         await ctx.send("Here you are: https://www.youtube.com/watch?v=rH0pOM2w_xo")
     elif map == "market":
@@ -154,18 +175,23 @@ async def callout(ctx, map):
     elif map == "station":
         await ctx.send("Here you are: https://www.youtube.com/watch?v=JEF2sG-KRIU")
     elif map == "siege":
-        await ctx.send("Here: https://www.youtube.com/watch?v=JxmcAIU_lnY&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8&index=7")
+        await ctx.send(
+            "Here: https://www.youtube.com/watch?v=JxmcAIU_lnY&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8&index=7")
     elif map == "uprising":
         await ctx.send("Here you go: https://www.youtube.com/watch?v=MUyQIhYA7-I")
     elif map == "embassy":
-        await ctx.send("Here you are: https://www.youtube.com/watch?v=fmT18WHiPYM&index=5&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8")
+        await ctx.send(
+            "Here you are: https://www.youtube.com/watch?v=fmT18WHiPYM&index=5&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8")
     elif map == "verticality":
-        await ctx.send("Here: https://www.youtube.com/watch?v=ITIfjU55SkI&index=10&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8")
+        await ctx.send(
+            "Here: https://www.youtube.com/watch?v=ITIfjU55SkI&index=10&list=PL7a9PMAEeinpjMD0UXdlUy5hywhzHHjr8")
+
 
 @bot.command()
 async def invite(ctx):
     """Gives an invite link for the bot."""
-    await ctx.send("https://discordapp.com/oauth2/authorize?client_id=370012655202598912&scope=bot&permissions=1341643969")
+    await ctx.send("")
+
 
 @bot.command()
 @commands.cooldown(1, .5, commands.BucketType.user)
@@ -173,10 +199,16 @@ async def info(ctx):
     """Provides info about the bot."""
     embed = discord.Embed(color=0x41454E, description="InsurgentBot by Steff and FreeDoum.")
     embed.title = "Info about InsurgentBot:"
-    embed.add_field(name="What is InsurgentBot?", value="InsurgentBot is a Discord bot written in the discord.py library. It has many fun commands for users.", inline=False)
-    embed.add_field(name="Who made this bot?", value="Coded by Steffbeard and FreeDoum, additional refrence by Mippy.", inline=False)
-    embed.add_field(name="Credits to:", value="[Rapptz/discord.py](https://github.com/Rapptz/discord.py), [The users in the Discord API server](https://discord.gg/discord-api), [The Insurgency Gym](https://discord.gg/658eVDM), [Mippy](https://williamlomas.me)", inline=False)
+    embed.add_field(name="What is InsurgentBot?",
+                    value="InsurgentBot is a Discord bot written in the discord.py library. It has many fun commands for users.",
+                    inline=False)
+    embed.add_field(name="Who made this bot?", value="Coded by Steffbeard and FreeDoum, additional refrence by Mippy.",
+                    inline=False)
+    embed.add_field(name="Credits to:",
+                    value="[Rapptz/discord.py](https://github.com/Rapptz/discord.py), [The users in the Discord API server](https://discord.gg/discord-api), [The Insurgency Gym](https://discord.gg/658eVDM), [Mippy](https://williamlomas.me)",
+                    inline=False)
     await ctx.send(embed=embed)
+
 
 @bot.command()
 @commands.cooldown(1, 3, commands.BucketType.user)
@@ -188,7 +220,7 @@ async def stats(ctx):
     t1 = time.perf_counter()
     message = await ctx.send("Checking stats... :cd:")
     t2 = time.perf_counter()
-    ping = round((t2-t1)*1000)
+    ping = round((t2 - t1) * 1000)
     embed = discord.Embed(color=0x41454E, description="Current Bot Stats")
     embed.title = "InsurgentBot Stats:"
     embed.add_field(name="Ping", value="{}ms".format(ping))
@@ -198,6 +230,7 @@ async def stats(ctx):
     await message.delete()
     await ctx.send(embed=embed)
 
+
 @bot.command()
 @commands.cooldown(1, 5, commands.BucketType.user)
 async def serverinfo(ctx):
@@ -205,21 +238,21 @@ async def serverinfo(ctx):
     user = ctx.message.author
     guild = ctx.message.guild
     online = len([m.status for m in guild.members
-			      if m.status == discord.Status.online or
-				  m.status == discord.Status.idle])
+                  if m.status == discord.Status.online or
+                  m.status == discord.Status.idle])
     total_users = len(guild.members)
     passed = (ctx.message.created_at - guild.created_at).days
     created_at = ("Created {}. That's {} days ago!"
-			      "".format(guild.created_at.strftime("%d %b %Y %H:%M"),
-						   passed))
+                  "".format(guild.created_at.strftime("%d %b %Y %H:%M"),
+                            passed))
     categories = len(guild.categories)
     text = len(guild.text_channels)
     voice = len(guild.voice_channels)
     features = guild.features
     if features == []:
-	    features = "No VIP Features"
+        features = "No VIP Features"
     else:
-	    features = guild.features
+        features = guild.features
 
     data = discord.Embed(description=created_at, color=0x41454E)
     data.add_field(name="Region", value=str(guild.region))
@@ -231,14 +264,61 @@ async def serverinfo(ctx):
     data.set_footer(text="Guild ID: {}".format(guild.id))
 
     if guild.icon_url:
-	    data.set_author(name=guild.name, url=guild.icon_url)
-	    data.set_thumbnail(url=guild.icon_url)
+        data.set_author(name=guild.name, url=guild.icon_url)
+        data.set_thumbnail(url=guild.icon_url)
     else:
-	    data.set_author(name=guild.name)
+        data.set_author(name=guild.name)
 
     try:
-	    await ctx.send(embed=data)
+        await ctx.send(embed=data)
     except discord.HTTPException:
-	    await ctx.send("{}, I need the `Embed Links` permission to send this command's output. :no_entry:".format(user.mention))
+        await ctx.send(
+            "{}, I need the `Embed Links` permission to send this command's output. :no_entry:".format(user.mention))
+
+@bot.command()
+@commands.cooldown(1, 1800)
+async def say(ctx, *, message):
+    await ctx.send(message)
+
+# COMMAND ERROR HANDLERS #####################################################################################################################################################################################
+
+@info.error
+async def info_error_handler(ctx, error):
+    user = ctx.message.author
+    if isinstance(error, commands.CommandOnCooldown):
+        await ctx.send("{}, you are being ratelimited. :no_entry:\nThis request has been logged, check `{}ratelimits` for more info.".format(user.mention, ctx.prefix))
+        print("User {}({}) ratelimited at command 'info'".format(user, user.id))
+
+@stats.error
+async def stats_error_handler(ctx, error):
+    user = ctx.message.author
+    if isinstance(error, commands.CommandOnCooldown):
+        await ctx.send("{}, you are being ratelimited. :no_entry:\nThis request has been logged, check `{}ratelimits` for more info.".format(user.mention, ctx.prefix))
+        print("User {}({}) ratelimited at command 'stats'".format(user, user.id))
+
+@say.error
+async def say_error_handler(ctx, error):
+    user = ctx.message.author
+    if isinstance(error, commands.CommandOnCooldown):
+        await ctx.send("{}, you are being ratelimited. :no_entry:".format(user.mention, ctx.prefix))
+        print("User {}({}) ratelimited at command 'say'".format(user.name, user.id))
+    elif isinstance(error, commands.CheckFailure):
+        await ctx.send("{}, you do not have the required permissions for this command. :no_entry:".format(user.mention))
+    else:
+        embed = discord.Embed(color=0x41454E, description="Command Help")
+        embed.title = "{}say Help".format(ctx.prefix)
+        embed.add_field(name="{}say <message>".format(ctx.prefix), value="Make the bot send a message!", inline=False)
+        await ctx.send(embed=embed)
+
+@add.error
+async def say_error_handler(ctx, error):
+    user = ctx.message.author
+    if isinstance(error, commands.CommandOnCooldown):
+        await ctx.send("{}, you are being ratelimited. :no_entry:".format(user.mention, ctx.prefix))
+        print("User {}({}) ratelimited at command 'add'".format(user.name, user.id))
+    elif isinstance(error, commands.CheckFailure):
+        await ctx.send("{}, you do not have the required permissions for this command. :no_entry:".format(user.mention))
+
+# RUN BOT #####################################################################################################################################################################################
 
 bot.run('MzcwMDEyNjU1MjAyNTk4OTEy.DMg5fQ.3Jzs2volpAGyNEwI8TQS-raiKpA')
