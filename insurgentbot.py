@@ -220,7 +220,6 @@ async def serverinfo(ctx):
     data.add_field(name="Channels", value="{} Categories | {} Text | {} Voice".format(categories, text, voice))
     data.add_field(name="Owner", value=str(guild.owner.mention))
     data.set_footer(text="Guild ID: {}".format(guild.id))
-
     if guild.icon_url:
         data.set_author(name=guild.name, url=guild.icon_url)
         data.set_thumbnail(url=guild.icon_url)
