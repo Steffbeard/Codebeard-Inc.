@@ -276,6 +276,12 @@ async def ping(ctx):
     """Pong!"""
     await ctx.send(":ping_pong: Pong!")
 
+@bot.command()
+@commands.cooldown(1, 5, commands.BucketType.user)
+async def shrug(ctx):
+    """¯\_(ツ)_/¯"""
+    await ctx.send("¯\_(ツ)_/¯")
+
 # COMMAND ERROR HANDLERS #####################################################################################################################################################################################
 
 @info.error
@@ -315,6 +321,24 @@ async def say_error_handler(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
         await ctx.send("{}, you are being ratelimited. :no_entry:".format(user.mention, ctx.prefix))
         print("User {}({}) ratelimited at command 'add'".format(user.name, user.id))
+    elif isinstance(error, commands.CheckFailure):
+        await ctx.send("{}, you do not have the required permissions for this command. :no_entry:".format(user.mention))
+
+@ping.error
+async def say_error_handler(ctx, error):
+    user = ctx.message.author
+    if isinstance(error, commands.CommandOnCooldown):
+        await ctx.send("{}, you are being ratelimited. :no_entry:".format(user.mention, ctx.prefix))
+        print("User {}({}) ratelimited at command 'ping'".format(user.name, user.id))
+    elif isinstance(error, commands.CheckFailure):
+        await ctx.send("{}, you do not have the required permissions for this command. :no_entry:".format(user.mention))
+
+@shrug.error
+async def say_error_handler(ctx, error):
+    user = ctx.message.author
+    if isinstance(error, commands.CommandOnCooldown):
+        await ctx.send("{}, you are being ratelimited. :no_entry:".format(user.mention, ctx.prefix))
+        print("User {}({}) ratelimited at command 'shrug'".format(user.name, user.id))
     elif isinstance(error, commands.CheckFailure):
         await ctx.send("{}, you do not have the required permissions for this command. :no_entry:".format(user.mention))
         
