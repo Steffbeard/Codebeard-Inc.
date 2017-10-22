@@ -114,7 +114,8 @@ async def endvote(ctx):
     if mapVotes == []:
         await ctx.send('Vote ended, no vote registered')
     else:
-        mapName = mapPool[random.choice(mapVotes) - 1]
+        random.seed()
+        mapName = mapPool[mapVotes[random.randint(0,len(mapVotes) - 1)] - 1]
         await ctx.send('Vote ended, the resulting map is {}'.format(mapName))
     mapVotes = 0
     voteID = 0
