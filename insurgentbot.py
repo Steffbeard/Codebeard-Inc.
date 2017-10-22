@@ -301,6 +301,12 @@ async def stats(ctx):
     embed.add_field(name="Channels", value=channelcount)
     await ctx.send(embed=embed)  
 
+@bot.command()
+@commands.cooldown(1, 3, commands.BucketType.user)
+async def ping(ctx):
+    """Pong!"""
+    await ctx.send(":ping_pong: Pong!")
+
 # COMMAND ERROR HANDLERS #####################################################################################################################################################################################
 
 @info.error
