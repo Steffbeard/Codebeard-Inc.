@@ -278,6 +278,7 @@ async def serverinfo(ctx):
 @bot.command()
 @commands.cooldown(1, 1800)
 async def here(ctx, message):
+    """Asks @here to join PUG."""
     await ctx.send("@here Need {} more members for a PUG!".format(message))
 
 @bot.command()
@@ -298,7 +299,7 @@ async def stats(ctx):
     embed.add_field(name="Servers", value=servercount)
     embed.add_field(name="Users", value=usercount)
     embed.add_field(name="Channels", value=channelcount)
-    await ctx.send(embed=embed)    
+    await ctx.send(embed=embed)  
 
 # COMMAND ERROR HANDLERS #####################################################################################################################################################################################
 
@@ -316,7 +317,7 @@ async def stats_error_handler(ctx, error):
         await ctx.send("{}, you are being ratelimited. :no_entry:\nThis request has been logged, check `{}ratelimits` for more info.".format(user.mention, ctx.prefix))
         print("User {}({}) ratelimited at command 'stats'".format(user, user.id))
 
-@say.error
+@here.error
 async def say_error_handler(ctx, error):
     user = ctx.message.author
     if isinstance(error, commands.CommandOnCooldown):
@@ -324,10 +325,10 @@ async def say_error_handler(ctx, error):
         print("User {}({}) ratelimited at command 'say'".format(user.name, user.id))
     elif isinstance(error, commands.CheckFailure):
         await ctx.send("{}, you do not have the required permissions for this command. :no_entry:".format(user.mention))
-    else:
+    elif isinstance(error, commands.MissingRequiredArgument):
         embed = discord.Embed(color=0x41454E, description="Command Help")
-        embed.title = "{}say Help".format(ctx.prefix)
-        embed.add_field(name="{}say <message>".format(ctx.prefix), value="Make the bot send a message!", inline=False)
+        embed.title = "{}here Help".format(ctx.prefix)
+        embed.add_field(name="{}here <message>".format(ctx.prefix), value="Put a number of people needed to join the PUG!", inline=False)
         await ctx.send(embed=embed)
 
 @add.error
@@ -338,13 +339,6 @@ async def say_error_handler(ctx, error):
         print("User {}({}) ratelimited at command 'add'".format(user.name, user.id))
     elif isinstance(error, commands.CheckFailure):
         await ctx.send("{}, you do not have the required permissions for this command. :no_entry:".format(user.mention))
-
-@stats.error
-async def stats_error_handler(ctx, error):
-    user = ctx.message.author
-	if isinstance(error, commands.CommandOnCooldown):
-		await ctx.send("{}, you are being ratelimited. :no_entry:\nThis request has been logged, check `{}ratelimits` for more info.".format(user.mention, ctx.prefix))
-		print("User {}({}) ratelimited at command 'stats'".format(user, user.id))
         
 # RUN BOT #####################################################################################################################################################################################
 
