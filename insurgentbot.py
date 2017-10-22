@@ -278,8 +278,28 @@ async def serverinfo(ctx):
 
 @bot.command()
 @commands.cooldown(1, 1800)
-async def say(ctx, *, message):
-    await ctx.send(message)
+async def here(ctx, message):
+    await ctx.send("@here Need {} more members for a PUG!".format(message))
+
+@bot.command()
+@commands.cooldown(1, 3, commands.BucketType.user)
+async def stats(ctx):
+    """Shows InsurgentBot's stats."""
+    servercount = len(bot.guilds)
+    usercount = len(set(bot.get_all_members()))
+    channelcount = len(set(bot.get_all_channels()))
+    t1 = time.perf_counter()
+    message = await ctx.send("Checking stats... :cd:")
+    t2 = time.perf_counter()
+    await message.delete()
+    ping = round((t2 - t1) * 1000)
+    embed = discord.Embed(color=0x41454E, description="Current Bot Stats")
+    embed.title = "InsurgentBot Stats:"
+    embed.add_field(name="Ping", value="{}ms".format(ping))
+    embed.add_field(name="Servers", value=servercount)
+    embed.add_field(name="Users", value=usercount)
+    embed.add_field(name="Channels", value=channelcount)
+    await ctx.send(embed=embed)    
 
 # COMMAND ERROR HANDLERS #####################################################################################################################################################################################
 
@@ -320,6 +340,13 @@ async def say_error_handler(ctx, error):
     elif isinstance(error, commands.CheckFailure):
         await ctx.send("{}, you do not have the required permissions for this command. :no_entry:".format(user.mention))
 
+@stats.error
+async def stats_error_handler(ctx, error):
+    user = ctx.message.author
+	if isinstance(error, commands.CommandOnCooldown):
+		await ctx.send("{}, you are being ratelimited. :no_entry:\nThis request has been logged, check `{}ratelimits` for more info.".format(user.mention, ctx.prefix))
+		print("User {}({}) ratelimited at command 'stats'".format(user, user.id))
+        
 # RUN BOT #####################################################################################################################################################################################
 
 bot.run('MzcwMDEyNjU1MjAyNTk4OTEy.DMg5fQ.3Jzs2volpAGyNEwI8TQS-raiKpA')
