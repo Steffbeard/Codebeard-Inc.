@@ -169,7 +169,7 @@ async def callouts(ctx, map):
     elif map == "market":
         await ctx.send("Here: https://www.youtube.com/watch?v=-B8VUUG8XQk&")
     elif map == "ministry":
-        await ctx.send("Here you go: https://www.youtube.com/watch?v=_HCdrwFo8FU&")
+        await ctx.send("Here you go: https://www.youtube.com/watch?v=1U9Nuzv1oXQ")
     elif map == "station":
         await ctx.send("Here you are: https://www.youtube.com/watch?v=JEF2sG-KRIU")
     elif map == "siege":
