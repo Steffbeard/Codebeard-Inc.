@@ -2,9 +2,11 @@ import random
 import time
 import discord
 import csv
+import utils
+from utils import checks
 from discord.ext import commands
 
-description = '''InsurgentBot coded by Steffbeard and FreeDoum. For use in the Insurgency Gym.
+description = '''BlakeBot coded by Steffbeard and FreeDoum. For use on BlakeGames.
 There are a number of utility commands being showcased here.'''
 bot = commands.Bot(command_prefix='.', description=description)
 
@@ -22,7 +24,8 @@ async def on_ready():
     mikeeQuotes = open('mikee.txt', 'r').readlines()
     mapPool = ["District", "Embassy", "Market", "Uprising", "Station", "Verticality", "Heights", "Siege", "Ministry"]
     vote = False
-    coolPeople = ['<@178653059096772611>','<@267088096770785291>']
+
+    coolPeople = ['<@178653059096772611>','<@267088096770785291>',]
     print("-----------------------------")
     print("Martydom is overrated")
     print("-----------------------------")
@@ -30,6 +33,12 @@ async def on_ready():
     print("-----------------------------")
     print("Currently serving {} users".format(users))
     print("-----------------------------")
+
+@bot.command()
+@commands.is_owner()
+async def pd(ctx):
+    """Check to see if perms is working"""
+    await ctx.send('This is it chief!')
 
 
 @bot.command()
@@ -187,8 +196,8 @@ async def callouts(ctx, map):
 async def info(ctx):
     """Provides info about the bot."""
     embed = discord.Embed(color=0x41454E, description="InsurgentBot by Steff and FreeDoum.")
-    embed.title = "Info about InsurgentBot:"
-    embed.add_field(name="What is InsurgentBot?",value="InsurgentBot is a Discord bot written in the discord.py library. It has many fun commands for users.",inline=False)
+    embed.title = "Info about BlakeBot:"
+    embed.add_field(name="What is BlakeBot?",value="BlakeBot is a Discord bot written in the discord.py library. It has many fun commands for users.",inline=False)
     embed.add_field(name="Who made this bot?", value="Coded by Steffbeard and FreeDoum, additional refrence by Mippy.",inline=False)
     embed.add_field(name="Credits to:",value="[Rapptz/discord.py](https://github.com/Rapptz/discord.py), [The users in the Discord API server](https://discord.gg/discord-api), [The Insurgency Gym](https://discord.gg/658eVDM), [Mippy](https://williamlomas.me)",inline=False)
     await ctx.send(embed=embed)
@@ -241,7 +250,7 @@ async def here(ctx, int):
 @bot.command()
 @commands.cooldown(1, 3, commands.BucketType.user)
 async def stats(ctx):
-    """Shows InsurgentBot's stats."""
+    """Shows BlakeBot's stats."""
     servercount = len(bot.guilds)
     usercount = len(set(bot.get_all_members()))
     channelcount = len(set(bot.get_all_channels()))
