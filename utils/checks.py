@@ -1,30 +1,35 @@
 from discord.ext import commands
 import discord.utils
 
-def is_owner_check(ctx):
-    return ctx.message.author.id == 169275259026014208
+#
+# This is a modified version of checks.py, originally made by Rapptz
+#
+#                 https://github.com/Rapptz
+#          https://github.com/Rapptz/RoboDanny/tree/async
+#
+# 411955563954569226 is ignatius
+# 438345376320192514 is blake
+# 178653059096772611 is steffbeard
+# 489211942603456512 is the server ID (bg)
+# 499019897754484737 is the server ID (test)
+#
 
-def is_owner():
-    return commands.check(is_owner_check)
+def is_owner(ctx):
+    return ctx.author.id == 178653059096772611 or ctx.author.id == 411955563954569226 or ctx.author.id == 298421225280110592
 
-# The permission system of the bot is based on a "just works" basis
-# You have permissions and the bot has permissions. If you meet the permissions
-# required to execute the command (and the bot does as well) then it goes through
-# and you can execute the command.
-# If these checks fail, then there are two fallbacks.
-# A role with the name of Bot Mod and a role with the name of Bot Admin.
-# Having these roles provides you access to certain commands without actually having
-# the permissions required for them.
-# Of course, the owner will always be able to execute commands.
+def is_admin(ctx):
+    role = discord.utils.get(ctx.bot.get_guild(489211942603456512).roles, name='Staff')
+    user = discord.utils.get(ctx.bot.get_guild(489211942603456512).members, id=ctx.author.id)
+    return role in user.roles or is_owner(ctx)
 
 def check_permissions(ctx, perms):
-    if is_owner_check(ctx):
+    if is_owner(ctx):
         return True
     elif not perms:
         return False
 
     ch = ctx.message.channel
-    author = ctx.message.author
+    author = ctx.author
     resolved = ch.permissions_for(author)
     return all(getattr(resolved, name, None) == value for name, value in perms.items())
 
@@ -33,7 +38,7 @@ def role_or_permissions(ctx, check, **perms):
         return True
 
     ch = ctx.message.channel
-    author = ctx.message.author
+    author = ctx.author
     if ch.is_private:
         return False # can't have roles in PMs
 
@@ -47,7 +52,7 @@ def serverowner_or_permissions(**perms):
         server = ctx.message.guild
         owner = server.owner
 
-        if ctx.message.author.id == owner.id:
+        if ctx.author.id == owner.id:
             return True
 
         return check_permissions(ctx,perms)
